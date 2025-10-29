@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Control | Módulo UV-C</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --color-primario: #0f3460;
+            --color-secundario: #16213e;
+            --color-fondo: #0a192f;
+            --color-texto: #e6f1ff;
+            --color-acento: #537fe7;
+            --color-exito: #32de84;
+            --color-apagado: #ff4757;
+            --sombra-caja: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--color-secundario);
+        }
+
+        header h1 {
+            color: var(--color-texto);
+            margin: 0;
+            font-size: 2em;
+        }
+
+        /* NUEVO: Contenedor para el logo y el indicador de estado */
+        .header-right-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            /* Espacio entre el logo y el indicador de estado */
+        }
+
+        #logo {
+            max-height: 50px;
+            /* Tamaño del logo */
+            width: auto;
+            border-radius: 8px;
+            /* Pequeño borde redondeado para integrar */
+            background-color: rgba(255, 255, 255, 0.1);
+            /* Ligero fondo para el logo */
+            padding: 5px 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--color-exito);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(50, 222, 132, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(50, 222, 132, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(50, 222, 132, 0);
+            }
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--color-secundario);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--sombra-caja);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--color-acento);
+            border-bottom: 2px solid var(--color-primario);
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .telemetry-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--color-primario);
+        }
+
+        .telemetry-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .telemetry-item .label {
+            font-size: 1.1em;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .telemetry-item .value {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: var(--color-texto);
+        }
+
+        .telemetry-item .unit {
+            font-size: 1.2em;
+            font-weight: 300;
+            color: var(--color-acento);
+            margin-left: 5px;
+        }
+
+        .progress-bar-container {
+            width: 90%;
+            height: 25px;
+            background-color: var(--color-primario);
+            border-radius: 25px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-acento), var(--color-exito));
+            border-radius: 25px;
+            transition: width 0.5s ease-out;
+            text-align: center;
+            line-height: 25px;
+            font-weight: bold;
+            color: var(--color-primario);
+        }
+
+        #uv-progress-text {
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1em;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-primario);
+        }
+
+        .control-item:last-child {
+            border-bottom: none;
+        }
+
+        .control-item .label {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .control-status {
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-on {
+            background-color: var(--color-exito);
+            color: #000;
+        }
+
+        .status-off {
+            background-color: var(--color-apagado);
+            color: var(--color-texto);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--color-exito);
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px var(--color-exito);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <header>
+            <h1>Módulo de Tratamiento de Agua</h1>
+            <div class="header-right-section">
+                <img id="logo" src="logo.png" alt="AquaConnect IoT">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="system-status">En línea</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>📈 Telemetría</h2>
+                <div class="telemetry-item">
+                    <span class="label">Caudal Actual</span>
+                    <div>
+                        <span class="value" id="flow-value">--.-</span>
+                        <span class="unit">L/min</span>
+                    </div>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">Presión del Sistema</span>
+                    <div>
+                        <span class="value" id="pressure-value">-.--</span>
+                        <span class="unit">Bar</span>
+                    </div>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">Tiempo de Exposición UV</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="uv-progress-bar-fill"></div>
+                    </div>
+                    <span id="uv-progress-text">0 / 300 s</span>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>🕹️ Panel de Control</h2>
+                <div class="control-item">
+                    <div>
+                        <span class="label">Bomba de Agua</span>
+                        <span class="control-status status-off" id="pump-status">APAGADA</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pump-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="control-item">
+                    <div>
+                        <span class="label">Lámpara UV-C</span>
+                        <span class="control-status status-off" id="uv-status">APAGADA</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="uv-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="card full-width-card">
+                <h2>📊 Visualización de Datos</h2>
+                <div class="chart-container">
+                    <div>
+                        <canvas id="flowChart"></canvas>
+                    </div>
+                    <div>
+                        <canvas id="uvChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Selección de Elementos del DOM ---
+            const flowValueEl = document.getElementById('flow-value');
+            const pressureValueEl = document.getElementById('pressure-value'); // Asegúrate de que este elemento exista
+            const systemStatusEl = document.getElementById('system-status');
+
+            const pumpToggle = document.getElementById('pump-toggle');
+            const pumpStatusEl = document.getElementById('pump-status');
+
+            const uvToggle = document.getElementById('uv-toggle');
+            const uvStatusEl = document.getElementById('uv-status');
+
+            const uvProgressTextEl = document.getElementById('uv-progress-text');
+            const uvProgressBarFillEl = document.getElementById('uv-progress-bar-fill');
+
+            // --- Lógica de Simulación y Control ---
+            let uvTimer = null;
+            let uvExposureTime = 0;
+            const MAX_UV_EXPOSURE_TIME = 300;
+
+            // --- Configuración de Gráficas ---
+            const flowChartCtx = document.getElementById('flowChart').getContext('2d');
+            const uvChartCtx = document.getElementById('uvChart').getContext('2d');
+
+            const flowChart = new Chart(flowChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Caudal (L/min)',
+                        data: [],
+                        borderColor: 'rgba(50, 222, 132, 1)',
+                        backgroundColor: 'rgba(50, 222, 132, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'Historial de Caudal', color: '#e6f1ff', font: { size: 16 } },
+                        legend: { labels: { color: '#e6f1ff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#e6f1ff' }, grid: { color: 'rgba(230, 241, 255, 0.1)' } },
+                        y: { ticks: { color: '#e6f1ff' }, grid: { color: 'rgba(230, 241, 255, 0.1)' }, beginAtZero: true, max: 8 }
+                    }
+                }
+            });
+
+            const uvChart = new Chart(uvChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tiempo Usado (s)', 'Tiempo Restante (s)'],
+                    datasets: [{
+                        data: [0, MAX_UV_EXPOSURE_TIME],
+                        backgroundColor: ['rgba(83, 127, 231, 1)', 'rgba(15, 52, 96, 1)'],
+                        borderColor: 'rgba(22, 33, 62, 1)',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'Uso Acumulado de Lámpara UV', color: '#e6f1ff', font: { size: 16 } },
+                        legend: { position: 'top', labels: { color: '#e6f1ff' } }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            function updateSimulatedData() {
+                const isPumpOn = pumpToggle.checked;
+                let simulatedFlow = 0;
+                let simulatedPressure = 0;
+
+                if (isPumpOn) {
+                    simulatedFlow = (Math.random() * 1.5 + 4.5).toFixed(1);
+                    simulatedPressure = (Math.random() * 0.7 + 1.8).toFixed(2);
+                } else {
+                    simulatedFlow = 0.0.toFixed(1);
+                    simulatedPressure = 0.0.toFixed(2);
+                }
+
+                flowValueEl.textContent = simulatedFlow;
+                pressureValueEl.textContent = simulatedPressure;
+
+                // Actualizar gráfica de caudal
+                const now = new Date();
+                const timeLabel = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+                flowChart.data.labels.push(timeLabel);
+                flowChart.data.datasets[0].data.push(parseFloat(simulatedFlow));
+
+                if (flowChart.data.labels.length > 10) {
+                    flowChart.data.labels.shift();
+                    flowChart.data.datasets[0].data.shift();
+                }
+                flowChart.update();
+
+                systemStatusEl.textContent = 'Actualizando...';
+                setTimeout(() => { systemStatusEl.textContent = 'En línea'; }, 1000);
+            }
+
+            function updateUVExposureBarAndChart() {
+                uvProgressTextEl.textContent = `${uvExposureTime} / ${MAX_UV_EXPOSURE_TIME} s`;
+                const percentage = (uvExposureTime / MAX_UV_EXPOSURE_TIME) * 100;
+                uvProgressBarFillEl.style.width = `${percentage}%`;
+                uvProgressBarFillEl.textContent = percentage > 15 ? `${Math.round(percentage)}%` : '';
+
+                uvChart.data.datasets[0].data[0] = uvExposureTime;
+                uvChart.data.datasets[0].data[1] = MAX_UV_EXPOSURE_TIME - uvExposureTime;
+                uvChart.update();
+            }
+
+            pumpToggle.addEventListener('change', () => {
+                const isChecked = pumpToggle.checked;
+                pumpStatusEl.textContent = isChecked ? 'ENCENDIDA' : 'APAGADA';
+                pumpStatusEl.classList.toggle('status-on', isChecked);
+                pumpStatusEl.classList.toggle('status-off', !isChecked);
+            });
+
+            uvToggle.addEventListener('change', () => {
+                const isChecked = uvToggle.checked;
+                uvStatusEl.textContent = isChecked ? 'ENCENDIDA' : 'APAGADA';
+                uvStatusEl.classList.toggle('status-on', isChecked);
+                uvStatusEl.classList.toggle('status-off', !isChecked);
+
+                if (isChecked) {
+                    if (!uvTimer) {
+                        uvTimer = setInterval(() => {
+                            if (uvExposureTime < MAX_UV_EXPOSURE_TIME) {
+                                uvExposureTime++;
+                                updateUVExposureBarAndChart();
+                            } else {
+                                clearInterval(uvTimer);
+                                uvTimer = null;
+                            }
+                        }, 1000);
+                    }
+                } else {
+                    clearInterval(uvTimer);
+                    uvTimer = null;
+                }
+            });
+
+            // --- INICIALIZACIÓN ---
+            updateSimulatedData();
+            setInterval(updateSimulatedData, 30000);
+            updateUVExposureBarAndChart(); // Asegura que la barra y la gráfica UV se inicialicen correctamente
+        });
+    </script>
+
+</body>
+
+</html>
