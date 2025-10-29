@@ -32,6 +32,11 @@
     <!-- Encabezado -->
     <header class="bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-6 py-8 text-center">
+
+            <!-- LOGO: Ahora usando tu archivo PNG --><img src="logo.png" alt="Logo AquaConnect IoT"
+                class="w-24 h-24 mx-auto mb-4 object-contain"
+                onerror="this.src='https://placehold.co/96x96/ffffff/3b82f6?text=Logo\nNC'; this.classList.add('p-2', 'rounded-full', 'bg-blue-500');">
+
             <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
                 Módulo Didáctico de Tratamiento de Agua
             </h1>
@@ -52,11 +57,10 @@
                 <!-- Columna de Imagen -->
                 <div class="p-4 md:p-6 bg-gray-50 flex items-center justify-center">
                     <!-- 
-                      IMPORTANTE: 
-                      Asegúrate de que la imagen 'image_5203e5.jpg' esté en la misma carpeta que este archivo HTML.
-                      El 'onerror' mostrará un módulo de reemplazo si no la encuentra.
-                    -->
-                    <img src="modulo2.png" alt="Módulo de tratamiento de agua UV-C rediseñado"
+                        IMPORTANTE: 
+                        Asegúrate de que la imagen 'modulo2.png' esté en la misma carpeta que este archivo HTML.
+                        El 'onerror' mostrará un módulo de reemplazo si no la encuentra.
+                      --><img src="modulo2.png" alt="Módulo de tratamiento de agua UV-C rediseñado"
                         class="rounded-lg shadow-lg object-cover w-full h-auto max-h-[500px] border-4 border-gray-200"
                         onerror="this.src='https://placehold.co/600x450/3b82f6/ffffff?text=M%C3%B3dulo+de+Agua+UV-C\n(Imagen+no+encontrada)'; this.classList.remove('border-4');">
                 </div>
@@ -91,10 +95,9 @@
                 <!-- Tarjeta 1: Monitoreo Remoto -->
                 <div
                     class="feature-card bg-white rounded-lg shadow-lg p-8 text-center transition-all duration-300 transform hover:-translate-y-1">
-                    <!-- Icono SVG: Gráfico de Barras (Monitoreo) -->
-                    <svg class="w-16 h-16 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="24"
-                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Icono SVG: Gráfico de Barras (Monitoreo) --><svg class="w-16 h-16 text-blue-600 mx-auto mb-4"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 3v18h18" />
                         <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
                     </svg>
@@ -108,10 +111,9 @@
                 <!-- Tarjeta 2: Control y Automatización -->
                 <div
                     class="feature-card bg-white rounded-lg shadow-lg p-8 text-center transition-all duration-300 transform hover:-translate-y-1">
-                    <!-- Icono SVG: CPU (Control) -->
-                    <svg class="w-16 h-16 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="24"
-                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Icono SVG: CPU (Control) --><svg class="w-16 h-16 text-blue-600 mx-auto mb-4"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="16" height="16" x="4" y="4" rx="2" />
                         <rect width="6" height="6" x="9" y="9" rx="1" />
                         <path d="M15 2v2" />
@@ -133,10 +135,9 @@
                 <!-- Tarjeta 3: Plataforma Didáctica -->
                 <div
                     class="feature-card bg-white rounded-lg shadow-lg p-8 text-center transition-all duration-300 transform hover:-translate-y-1">
-                    <!-- Icono SVG: Nube (IoT) -->
-                    <svg class="w-16 h-16 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" width="24"
-                        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Icono SVG: Nube (IoT) --><svg class="w-16 h-16 text-blue-600 mx-auto mb-4"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
                     </svg>
                     <h3 class="text-2xl font-semibold text-gray-900 mb-3">Plataforma en la Nube</h3>
@@ -159,10 +160,9 @@
                 <div class="text-center w-full md:w-1/4">
                     <div
                         class="p-6 bg-blue-50 border-2 border-blue-200 rounded-full w-32 h-32 flex items-center justify-center mx-auto shadow-md">
-                        <!-- Icono: Sensores -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-16 h-16 text-blue-700">
+                        <!-- Icono: Sensores --><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 text-blue-700">
                             <path d="M14 4v3.34a4 4 0 0 1-2.94 3.9-4.14 4.14 0 0 1-1.06 0A4 4 0 0 1 7 7.34V4" />
                             <path d="M9 4h3" />
                             <path d="M7.5 11.66aF 4 4 0 0 1 0-6.32" />
@@ -197,10 +197,9 @@
                 <div class="text-center w-full md:w-1/4">
                     <div
                         class="p-6 bg-blue-50 border-2 border-blue-200 rounded-full w-32 h-32 flex items-center justify-center mx-auto shadow-md">
-                        <!-- Icono: Microcontrolador -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-16 h-16 text-blue-700">
+                        <!-- Icono: Microcontrolador --><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 text-blue-700">
                             <path d="M18 8V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2" />
                             <path d="M2 8h20" />
                             <rect width="20" height="12" x="2" y="8" rx="2" />
@@ -232,10 +231,9 @@
                 <div class="text-center w-full md:w-1/4">
                     <div
                         class="p-6 bg-blue-50 border-2 border-blue-200 rounded-full w-32 h-32 flex items-center justify-center mx-auto shadow-md">
-                        <!-- Icono: Dashboard -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="w-16 h-16 text-blue-700">
+                        <!-- Icono: Dashboard --><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 text-blue-700">
                             <rect width="20" height="14" x="2" y="3" rx="2" />
                             <line x1="8" x2="16" y1="21" y2="21" />
                             <line x1="12" x2="12" y1="17" y2="21" />
@@ -248,18 +246,47 @@
             </div>
         </section>
 
+        <!-- NUEVA SECCIÓN: Interfaz de Control (Dashboard) -->
+        <section class="my-16">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-10">
+                Nuestra Interfaz de Control (Dashboard)
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Imagen 1: Control y Telemetría -->
+                <div class="bg-white rounded-xl shadow-xl p-4 md:p-6">
+                    <img src="imagen1.png" alt="Dashboard de telemetría y control"
+                        class="rounded-lg shadow-md w-full border"
+                        onerror="this.src='https://placehold.co/600x400/3b82f6/ffffff?text=Dashboard+Control';">
+                    <p class="text-center text-gray-600 mt-4 text-lg">
+                        Visualización de telemetría y panel de control en tiempo real.
+                    </p>
+                </div>
+
+                <!-- Imagen 2: Visualización de Datos -->
+                <div class="bg-white rounded-xl shadow-xl p-4 md:p-6">
+                    <img src="imagen2.png" alt="Dashboard de visualización de datos"
+                        class="rounded-lg shadow-md w-full border"
+                        onerror="this.src='https://placehold.co/600x400/3b82f6/ffffff?text=Dashboard+Visualizaci%C3%B3n';">
+                    <p class="text-center text-gray-600 mt-4 text-lg">
+                        Gráficos para el análisis de datos históricos y mantenimiento.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
         <!-- Sección: Valor Didáctico -->
         <section class="my-16">
             <h2 class="text-3xl font-bold text-center text-blue-900 mb-10">
-                Valor para el Estudiante ULSA
+                Valor para el Estudiante de ULSA
             </h2>
             <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-xl p-8 md:p-10">
                 <ul class="space-y-6">
                     <li class="flex items-start">
-                        <!-- Icono SVG: Check -->
-                        <svg class="w-8 h-8 text-green-500 flex-shrink-0 mr-4" xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- Icono SVG: Check --><svg class="w-8 h-8 text-green-500 flex-shrink-0 mr-4"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 6 9 17l-5-5" />
                         </svg>
                         <span class="text-lg text-gray-700">
@@ -294,15 +321,51 @@
             </div>
         </section>
 
+        <!-- Sección ¿Quiénes Somos? -->
+        <section class="my-16">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-10">
+                ¿Quiénes Somos?
+            </h2>
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-xl p-8 md:p-10">
+                <div class="flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
+                    <!-- Logo del equipo (ahora PNG) --><img src="logo.png" alt="Logo AquaConnect IoT"
+                        class="w-32 h-32 flex-shrink-0 mb-6 md:mb-0 md:mr-8 object-contain"
+                        onerror="this.src='https://placehold.co/128x128/3b82f6/ffffff?text=Logo\nNC'; this.classList.add('p-2', 'rounded-full', 'bg-blue-500');">
+                    <!-- Texto -->
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">AquaConnect IoT</h3>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Somos un equipo de cuatro estudiantes de ingeniería apasionados por conectar la teoría con
+                            la práctica.
+                            <br><br>
+                            Nuestra misión: tomar un proceso físico real, como el tratamiento de agua (<b>Aqua</b>), y
+                            vincularlo al mundo digital a través de la tecnología (<b>Connect</b> e <b>IoT</b>).
+                            <br><br>
+                            Creamos este proyecto como un módulo didáctico para que nuestros compañeros universitarios
+                            puedan experimentar y entender de forma tangible qué son la Industria 4.0, el control y el
+                            monitoreo remoto.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Pie de Página -->
-    <footer class="text-center py-10 mt-12 bg-gray-200 border-t border-gray-300">
-        <p class="text-gray-600">Un proyecto de <span class="font-semibold">Ingeniería ULSA</span> para la Industria 4.0
-        </p>
+    <footer class="py-10 mt-12 bg-gray-200 border-t border-gray-300">
+        <div class="container mx-auto px-6 md:px-8 text-center md:flex md:justify-between md:items-center">
+            <!-- Columna izquierda: Proyecto -->
+            <p class="text-gray-600 text-sm mb-2 md:mb-0">
+                Un proyecto de <span class="font-semibold">AquaConnect IoT (Estudiantes de Ingeniería en ULSA)</span>
+            </p>
+            <!-- Columna derecha: Diseñador -->
+            <p class="text-gray-600 text-sm md:text-right">
+                Diseñado por: <span class="font-semibold">Alfredo Contreras</span>
+            </p>
+        </div>
     </footer>
 
 </body>
-
 
 </html>
