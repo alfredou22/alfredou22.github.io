@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medidor de nivel de tanque</title>
+    <!-- Importar Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter de Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Estilos para que el SVG se vea bien */
+        svg text {
+            -webkit-user-select: none;
+            /* Safari */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="container mx-auto max-w-4xl bg-white shadow-2xl rounded-lg overflow-hidden flex flex-col md:flex-row"
+        style="height: 500px;">
+
+        <!-- 1. Área de Simulación (Canvas) -->
+        <div class="flex-grow p-4 md:p-6 bg-gray-50 border-b md:border-b-0 md:border-r">
+            <svg id="simulationCanvas" viewBox="0 0 450 350" class="w-full h-full">
+                <!-- Tuberías -->
+                <line x1="375" y1="250" x2="375" y2="50" stroke="black" stroke-width="2" />
+                <line x1="250" y1="50" x2="375" y2="50" stroke="black" stroke-width="2" />
+                <line x1="250" y1="270" x2="300" y2="270" stroke="black" stroke-width="2" />
+
+                <!-- Tanque -->
+                <rect x="50" y="50" width="200" height="250" stroke="black" stroke-width="2" fill="none" />
+
+                <!-- Agua (se actualiza con JS) -->
+                <!-- Comienza con altura 0 en la parte inferior -->
+                <rect id="waterRect" x="51" y="300" width="198" height="0" fill="cyan" stroke-width="0" />
+
+                <!-- Sensores (coordenadas Y calculadas) -->
+                <!-- L101 (Y=95.5) -->
+                <text x="30" y="95.5" dominant-baseline="middle">L101</text>
+                <line x1="40" y1="95.5" x2="50" y2="95.5" stroke="red" stroke-width="2" />
+                <!-- L100 (Y=243.2) -->
+                <text x="30" y="243.2" dominant-baseline="middle">L100</text>
+                <line x1="40" y1="243.2" x2="50" y2="243.2" stroke="blue" stroke-width="2" />
+
+                <!-- Bomba -->
+                <ellipse id="pumpGraphic" cx="375" cy="275" rx="25" ry="25" fill="gray" stroke="black"
+                    stroke-width="2" />
+                <text x="375" y="275" text-anchor="middle" dominant-baseline="middle" fill="white" font-weight="bold"
+                    font-size="10">BOMBA</text>
+
+                <!-- Válvula E102 -->
+                <text id="valveGraphic" x="275" y="260" text-anchor="middle" font-weight="bold" fill="black">E102</text>
+            </svg>
+        </div>
+
+        <!-- 2. Panel de Control -->
+        <div class="w-full md:w-64 p-4 md:p-6 bg-gray-50 flex flex-col gap-4 shadow-inner">
+            <h2 class="text-xl font-bold text-center text-gray-800">Panel de Control</h2>
+
+            <button id="btnS1"
+                class="w-full py-3 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition-colors">
+                S1 (Start)
+            </button>
+            <button id="btnS2"
+                class="w-full py-3 px-4 bg-yellow-400 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-opacity-75 transition-colors">
+                S2 (Válvula)
+            </button>
+            <button id="btnS0"
+                class="w-full py-3 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition-colors">
+                S0 (Stop)
+            </button>
+
+            <!-- Luces Indicadoras -->
+            <div class="mt-4 pt-4 border-t border-gray-300 flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 font-medium">Luz Verde (Activo):</span>
+                    <div id="luzVerde"
+                        class="w-6 h-6 rounded-full bg-gray-400 border-2 border-gray-300 transition-colors"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 font-medium">Luz Roja (Parado):</span>
+                    <div id="luzRoja"
+                        class="w-6 h-6 rounded-full bg-red-500 border-2 border-gray-300 transition-colors"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // --- 1. Constantes del sistema ---
+
+        // Unidades lógicas (nivel abstracto)
+        const NIVEL_MAX_UNITS = 110.0;
+        const LEVEL_L100_LOGIC = 25.0;
+        const LEVEL_L101_LOGIC = 90.0;
+
+        // Coordenadas en Píxeles (visual del SVG)
+        const TANK_TOP_Y = 50;
+        const TANK_BOTTOM_Y = 300;
+        const TANK_HEIGHT_PX = TANK_BOTTOM_Y - TANK_TOP_Y;
+
+        // Factor de conversión: píxeles por unidad de nivel
+        const PX_PER_UNIT = TANK_HEIGHT_PX / NIVEL_MAX_UNITS;
+
+        // --- 2. Estado inicial del sistema ---
+        let sistema_activo = false;
+        let bomba_encendida = false;
+        let valvula_abierta = false;
+        let nivel_agua = 0.0;
+
+        // --- 3. Referencias a elementos del DOM ---
+        const btnS1 = document.getElementById('btnS1');
+        const btnS2 = document.getElementById('btnS2');
+        const btnS0 = document.getElementById('btnS0');
+        const luzVerde = document.getElementById('luzVerde');
+        const luzRoja = document.getElementById('luzRoja');
+        const waterRect = document.getElementById('waterRect');
+        const pumpGraphic = document.getElementById('pumpGraphic');
+        const valveGraphic = document.getElementById('valveGraphic');
+
+        // --- 4. Funciones de Control (Botones) ---
+
+        function presionar_s1() {
+            if (!sistema_activo) {
+                sistema_activo = true;
+                console.log("Sistema iniciado con S1");
+            }
+        }
+
+        function presionar_s2() {
+            // Condición 2: Nivel > L100 y S2 presionado
+            if (sistema_activo && nivel_agua > LEVEL_L100_LOGIC) {
+                valvula_abierta = true;
+                console.log("S2 presionado, abriendo válvula E102");
+            }
+        }
+
+        function presionar_s0() {
+            if (sistema_activo) {
+                sistema_activo = false;
+                bomba_encendida = false;
+                valvula_abierta = false;
+                console.log("Sistema detenido con S0");
+            }
+        }
+
+        // --- 5. Lógica principal y ciclo de actualización ---
+
+        function actualizar_sistema() {
+
+            // ---- Lógica de control ----
+            if (sistema_activo) {
+                // Luces
+                luzRoja.classList.remove('bg-red-500');
+                luzRoja.classList.add('bg-gray-400');
+                luzVerde.classList.remove('bg-gray-400');
+                luzVerde.classList.add('bg-green-500');
+
+                // Condición 1: Nivel < L100
+                if (nivel_agua < LEVEL_L100_LOGIC) {
+                    bomba_encendida = true;
+                    valvula_abierta = false;
+
+                    // Condición 3: Nivel > L101
+                } else if (nivel_agua > LEVEL_L101_LOGIC) {
+                    bomba_encendida = false;
+                }
+                // (La válvula se mantiene abierta si S2 la abrió, hasta que S0 o L100 lo cambien)
+
+            } else { // Sistema inactivo
+                bomba_encendida = false;
+                valvula_abierta = false;
+                // Luces
+                luzRoja.classList.add('bg-red-500');
+                luzRoja.classList.remove('bg-gray-400');
+                luzVerde.classList.add('bg-gray-400');
+                luzVerde.classList.remove('bg-green-500');
+            }
+
+            // ---- Actualización del estado del agua (Física) ----
+            if (bomba_encendida && nivel_agua < NIVEL_MAX_UNITS) {
+                nivel_agua += 0.5; // Llenado
+            }
+
+            if (valvula_abierta && nivel_agua > 0) {
+                nivel_agua -= 1.0; // Vaciado
+            }
+
+            if (nivel_agua < 0) {
+                nivel_agua = 0;
+            }
+            // Limitar el nivel máximo visualmente (aunque la lógica lo para en L101)
+            if (nivel_agua > NIVEL_MAX_UNITS) {
+                nivel_agua = NIVEL_MAX_UNITS;
+            }
+
+
+            // Bomba
+            pumpGraphic.setAttribute('fill', bomba_encendida ? '#22c55e' : '#6b7280'); // verde / gris
+
+            // Válvula
+            valveGraphic.setAttribute('fill', valvula_abierta ? '#3b82f6' : '#000000'); // azul / negro
+
+            // Nivel de agua (SVG rect)
+            let altura_agua_px = nivel_agua * PX_PER_UNIT;
+
+            // En SVG, 'y' es la esquina superior, 'height' crece hacia abajo.
+            // Así que restamos la altura del fondo del tanque.
+            let y_coord = TANK_BOTTOM_Y - altura_agua_px;
+
+            waterRect.setAttribute('y', y_coord);
+            waterRect.setAttribute('height', altura_agua_px);
+        }
+
+        // --- 6. Iniciar la aplicación ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Asignar eventos a los botones
+            btnS1.addEventListener('click', presionar_s1);
+            btnS2.addEventListener('click', presionar_s2);
+            btnS0.addEventListener('click', presionar_s0);
+
+            // Iniciar el ciclo de actualización (se ejecuta cada 50ms)
+            setInterval(actualizar_sistema, 50);
+        });
+
+    </script>
+</body>
+
+</html>
